@@ -1,6 +1,5 @@
 package com.restaurant.deliveryzone.repository;
 
-
 import com.restaurant.deliveryzone.domain.Restaurant;
 
 import java.util.List;

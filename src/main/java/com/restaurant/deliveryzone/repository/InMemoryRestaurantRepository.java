@@ -5,7 +5,6 @@ import com.restaurant.deliveryzone.domain.Restaurant;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Repository
