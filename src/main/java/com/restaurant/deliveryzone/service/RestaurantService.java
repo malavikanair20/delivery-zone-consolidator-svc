@@ -2,10 +2,11 @@ package com.restaurant.deliveryzone.service;
 
 import com.restaurant.deliveryzone.domain.Restaurant;
 import com.restaurant.deliveryzone.exception.DuplicateRestaurantIdException;
+import com.restaurant.deliveryzone.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,21 +15,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class RestaurantService {
+    private final RestaurantRepository restaurantRepository;
 
-    private final AtomicReference<List<Restaurant>> restaurants = new AtomicReference<>(List.of());
-    private final AtomicLong datasetVersion = new AtomicLong(0);
+    private final AtomicLong version = new AtomicLong(0);
+    private final Object writeLock = new Object();
 
     public int replaceAll(List<Restaurant> restaurantsList) {
         validateUniqueIds(restaurantsList);
-        List<Restaurant> normalized = restaurantsList.stream()
-                .map(this :: normalizeRestaurant)
-                .sorted(Comparator.comparing(Restaurant::id))
-                .toList();
-        restaurants.set(normalized);
-        datasetVersion.incrementAndGet();
-        return normalized.size();
-
+        synchronized (writeLock) {
+            restaurantRepository.replaceAll(restaurantsList);
+            long newVersion = version.incrementAndGet();
+            log.info("Replaced restaurant dataset: {} restaurants, version={}",
+                    restaurantsList.size(), newVersion);
+        }
+        return restaurantsList.size();
     }
 
     private static void validateUniqueIds(List<Restaurant> restaurantsList) {
@@ -40,12 +42,11 @@ public class RestaurantService {
         }
     }
 
-    private Restaurant normalizeRestaurant(Restaurant restaurant) {
-        return new Restaurant(
-                restaurant.id().trim(),
-                restaurant.name().trim(),
-                restaurant.latitude(),
-                restaurant.longitude(),
-                restaurant.deliveryRadiusMeters());
+    public List<Restaurant> findAll() {
+        return restaurantRepository.findAll();
+    }
+
+    public long getVersion() {
+        return version.get();
     }
 }
