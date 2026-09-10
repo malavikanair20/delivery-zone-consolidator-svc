@@ -1,0 +1,76 @@
+{
+  "transitiveAndIsolated": {
+    "restaurants": [
+      {
+        "id": "r1",
+        "name": "Restaurant A",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      {
+        "id": "r2",
+        "name": "Restaurant B",
+        "latitude": 51.51,
+        "longitude": -0.13,
+        "deliveryRadiusMeters": 2500
+      },
+      {
+        "id": "r3",
+        "name": "Restaurant C",
+        "latitude": 51.509,
+        "longitude": -0.125,
+        "deliveryRadiusMeters": 2000
+      },
+      {
+        "id": "r4",
+        "name": "Restaurant D",
+        "latitude": 51.6,
+        "longitude": -0.3,
+        "deliveryRadiusMeters": 1500
+      }
+    ],
+    "expectedGroups": [
+      {
+        "restaurantIds": [
+          "r1",
+          "r2",
+          "r3"
+        ],
+        "restaurantCount": 3
+      },
+      {
+        "restaurantIds": [
+          "r4"
+        ],
+        "restaurantCount": 1
+      }
+    ]
+  },
+  "determinism": {
+    "restaurants": [
+      {
+        "id": "r10",
+        "name": "Restaurant X",
+        "latitude": 52.4862,
+        "longitude": -1.8904,
+        "deliveryRadiusMeters": 2500
+      },
+      {
+        "id": "r11",
+        "name": "Restaurant Y",
+        "latitude": 52.487,
+        "longitude": -1.89,
+        "deliveryRadiusMeters": 1500
+      },
+      {
+        "id": "r12",
+        "name": "Restaurant Z",
+        "latitude": 52.6,
+        "longitude": -2.1,
+        "deliveryRadiusMeters": 1000
+      }
+    ]
+  }
+}
+

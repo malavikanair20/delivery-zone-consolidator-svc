@@ -1,0 +1,36 @@
+{
+  "scenarios": [
+    {
+      "scenario": "single connected chain and isolated nodes",
+      "size": 6,
+      "unionSteps": [
+        { "first": 0, "second": 1 },
+        { "first": 1, "second": 2 },
+        { "first": 3, "second": 4 }
+      ],
+      "expectations": [
+        { "left": 0, "right": 2, "connected": true },
+        { "left": 3, "right": 4, "connected": true },
+        { "left": 0, "right": 3, "connected": false },
+        { "left": 5, "right": 0, "connected": false }
+      ]
+    },
+    {
+      "scenario": "redundant unions remain connected",
+      "size": 5,
+      "unionSteps": [
+        { "first": 0, "second": 1 },
+        { "first": 1, "second": 2 },
+        { "first": 2, "second": 0 },
+        { "first": 3, "second": 4 }
+      ],
+      "expectations": [
+        { "left": 0, "right": 2, "connected": true },
+        { "left": 1, "right": 2, "connected": true },
+        { "left": 3, "right": 4, "connected": true },
+        { "left": 2, "right": 4, "connected": false }
+      ]
+    }
+  ]
+}
+
