@@ -1,9 +1,9 @@
 package com.restaurant.deliveryzone.util;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public final class GeoMath {
+
+    private GeoMath() {
+    }
 
     public static final double EARTH_RADIUS_METERS = 6_371_000.0;
 
@@ -26,7 +26,7 @@ public final class GeoMath {
                 + Math.cos(lat1) * Math.cos(lat2) * sinLon * sinLon;
 
         // Protect against tiny floating point errors.
-        a = Math.max(0.0, Math.min(1.0, a));
+        a = Math.clamp(a, 0.0, 1.0);
 
         return 2.0 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(a));
     }

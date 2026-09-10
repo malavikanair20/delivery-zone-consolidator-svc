@@ -30,5 +30,9 @@ public record GroupDetails(
     @JsonProperty("restaurants")
     List<Restaurant> restaurants
 ) {
+    public GroupDetails {
+        restaurantIds = List.copyOf(restaurantIds);
+        restaurants = List.copyOf(restaurants);
+    }
 }
 
