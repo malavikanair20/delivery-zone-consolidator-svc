@@ -1,5 +1,6 @@
 package com.restaurant.deliveryzone.service;
 
+import com.restaurant.deliveryzone.api.model.RestaurantResponse;
 import com.restaurant.deliveryzone.domain.Restaurant;
 import com.restaurant.deliveryzone.exception.DuplicateRestaurantIdException;
 import com.restaurant.deliveryzone.repository.RestaurantRepository;
@@ -9,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -20,17 +21,44 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
     private final AtomicLong version = new AtomicLong(0);
-    private final Object writeLock = new Object();
 
-    public int replaceAll(List<Restaurant> restaurantsList) {
-        validateUniqueIds(restaurantsList);
-        synchronized (writeLock) {
-            restaurantRepository.replaceAll(restaurantsList);
-            long newVersion = version.incrementAndGet();
-            log.info("Replaced restaurant dataset: {} restaurants, version={}",
-                    restaurantsList.size(), newVersion);
+    private int replaceAll(List<Restaurant> restaurantsList) {
+        List<Restaurant> normalizedRestaurants = normalizeRestaurants(restaurantsList);
+        validateUniqueIds(normalizedRestaurants);
+        restaurantRepository.replaceAll(normalizedRestaurants);
+        long newVersion = version.incrementAndGet();
+        log.info("Replaced restaurant dataset: {} restaurants, version={}",
+                normalizedRestaurants.size(), newVersion);
+        return normalizedRestaurants.size();
+    }
+
+    public RestaurantResponse replaceAllAndBuildResponse(List<Restaurant> restaurantsList) {
+        int loadedCount = replaceAll(restaurantsList);
+        return new RestaurantResponse(
+                "success",
+                loadedCount,
+                "Restaurants successfully stored"
+        );
+    }
+
+    private static List<Restaurant> normalizeRestaurants(List<Restaurant> restaurantsList) {
+        return restaurantsList.stream()
+                .map(restaurant -> new Restaurant(
+                        requireNonBlank(restaurant.id(), "id"),
+                        requireNonBlank(restaurant.name(), "name"),
+                        restaurant.latitude(),
+                        restaurant.longitude(),
+                        restaurant.deliveryRadiusMeters()
+                ))
+                .toList();
+    }
+
+    private static String requireNonBlank(String value, String fieldName) {
+        String trimmed = Objects.requireNonNull(value, fieldName + " must not be null").trim();
+        if (trimmed.isEmpty()) {
+            throw new IllegalArgumentException(fieldName + " must not be blank");
         }
-        return restaurantsList.size();
+        return trimmed;
     }
 
     private static void validateUniqueIds(List<Restaurant> restaurantsList) {

@@ -2,6 +2,7 @@ package com.restaurant.deliveryzone.service;
 
 import com.restaurant.deliveryzone.api.model.GroupDetails;
 import com.restaurant.deliveryzone.api.model.GroupSummary;
+import com.restaurant.deliveryzone.api.model.GroupSummaryResponse;
 import com.restaurant.deliveryzone.domain.ClusterResult;
 import com.restaurant.deliveryzone.domain.Restaurant;
 import com.restaurant.deliveryzone.exception.GroupNotFoundException;
@@ -16,6 +17,7 @@ import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,9 +28,11 @@ public class GroupingService {
 
     private final RestaurantService restaurantService;
     private final GroupingEngine groupingEngine;
-    private volatile Cache cache = new Cache(-1, List.of(), List.of(), Map.of());
-    public List<GroupSummary> getGroups() {
-        return getCurrentCache().groups;
+    private final AtomicReference<Cache> cache = new AtomicReference<>(new Cache(-1, List.of(), List.of(), Map.of()));
+
+    public GroupSummaryResponse getGroupsResponse() {
+        List<GroupSummary> groups = getCurrentCache().groups;
+        return new GroupSummaryResponse(groups.size(), groups);
     }
 
     public GroupDetails getGroup(String groupId) {
@@ -55,20 +59,20 @@ public class GroupingService {
 
     /** Kept for callers that want to force a rebuild without waiting on version drift. */
     public synchronized void invalidateCache() {
-        cache = new Cache(-1, List.of(), List.of(), Map.of());
+        cache.set(new Cache(-1, List.of(), List.of(), Map.of()));
     }
 
     private Cache getCurrentCache() {
         long version = restaurantService.getVersion();
 
-        Cache current = cache;
+        Cache current = cache.get();
         if (current.version == version) {
             log.debug("Cache hit at version {}", version);
             return current;
         }
 
         synchronized (this) {
-            current = cache;
+            current = cache.get();
             if (current.version == version) {
                 return current;
             }
@@ -90,7 +94,7 @@ public class GroupingService {
                     .collect(Collectors.toMap(Restaurant::id, Function.identity()));
 
             Cache updated = new Cache(version, restaurants, summaries, byId);
-            cache = updated;
+            cache.set(updated);
 
             long elapsedMillis = (System.nanoTime() - startNanos) / 1_000_000;
             log.info("Rebuilt group cache at version {}: {} restaurants -> {} groups in {} ms",
@@ -106,7 +110,7 @@ public class GroupingService {
                 .sorted()
                 .toList();
 
-        String groupId = "g-" + stableHash(ids).substring(0, 12);
+        String groupId = "g-" + stableHash(ids).substring(0, 16);
 
         return new GroupSummary(
                 groupId,

@@ -24,7 +24,7 @@ public interface DeliveryGroupingApi {
     })
     @PostMapping("/restaurants")
     ResponseEntity<RestaurantResponse> replaceRestaurants(
-            @RequestBody @Valid List<@Valid RestaurantRequest> restaurantRequestList
+            @RequestBody List<@Valid RestaurantRequest> restaurantRequestList
             );
 
     @Operation(summary = "Get consolidated delivery groups")
