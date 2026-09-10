@@ -6,7 +6,7 @@ import com.restaurant.deliveryzone.api.model.GroupSummaryResponse;
 import com.restaurant.deliveryzone.api.model.RestaurantRequest;
 import com.restaurant.deliveryzone.api.model.RestaurantResponse;
 import com.restaurant.deliveryzone.domain.Restaurant;
-import com.restaurant.deliveryzone.integration.ITBase;
+import com.restaurant.deliveryzone.util.ITBase;
 import com.restaurant.deliveryzone.util.TestDataFactory;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;

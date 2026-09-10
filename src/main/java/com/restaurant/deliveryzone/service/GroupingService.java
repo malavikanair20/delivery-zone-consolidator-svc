@@ -10,16 +10,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Log4j2
@@ -81,14 +78,20 @@ public class GroupingService {
 
             List<Restaurant> restaurants = restaurantService.findAll();
 
-            // Single pass: clustering + target-center/radius computed together,
-            // so we don't walk the restaurant list twice like the old split did.
             List<ClusterResult> clusters = groupingEngine.calculateGroups(restaurants);
 
-            List<GroupSummary> summaries = clusters.stream()
-                    .map(this::toSummary)
-                    .sorted(Comparator.comparing(GroupSummary::groupId))
+            List<ClusterWithIds> sortedClusters = clusters.stream()
+                    .map(clusterResult ->
+                            new ClusterWithIds(sortedRestaurantIds(clusterResult), clusterResult))
+                    .sorted(Comparator.comparing(cluster ->
+                            String.join(",", cluster.restaurantIds)))
                     .toList();
+
+            List<GroupSummary> summaries = IntStream.range(0, sortedClusters.size())
+                    .mapToObj(index -> {
+                        ClusterWithIds clusterWithIds = sortedClusters.get(index);
+                        return toSummary(clusterWithIds.cluster(), "g"+ (index+1), clusterWithIds.restaurantIds());
+                    }).toList();
 
             Map<String, Restaurant> byId = restaurants.stream()
                     .collect(Collectors.toMap(Restaurant::id, Function.identity()));
@@ -104,13 +107,7 @@ public class GroupingService {
         }
     }
 
-    private GroupSummary toSummary(ClusterResult cluster) {
-        List<String> ids = cluster.restaurantList().stream()
-                .map(Restaurant::id)
-                .sorted()
-                .toList();
-
-        String groupId = "g-" + stableHash(ids).substring(0, 16);
+    private GroupSummary toSummary(ClusterResult cluster, String groupId, List<String> ids) {
 
         return new GroupSummary(
                 groupId,
@@ -121,14 +118,9 @@ public class GroupingService {
                 cluster.radiusMeters());
     }
 
-    private String stableHash(List<String> ids) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            String input = String.join("\u0000", ids);
-            return HexFormat.of().formatHex(digest.digest(input.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException exception) {
-            throw new IllegalStateException("SHA-256 is not available", exception);
-        }
+    private List<String> sortedRestaurantIds(ClusterResult clusterResult) {
+        return clusterResult.restaurantList().stream().map(Restaurant::id)
+                .sorted().toList();
     }
 
     private record Cache(
@@ -137,4 +129,6 @@ public class GroupingService {
             List<GroupSummary> groups,
             Map<String, Restaurant> restaurantsById) {
     }
+
+    private record ClusterWithIds(List<String> restaurantIds, ClusterResult cluster) {}
 }

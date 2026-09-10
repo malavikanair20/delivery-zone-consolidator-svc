@@ -44,7 +44,7 @@
       "groupCount": 1,
       "groups": [
         {
-          "groupId": "g-a5ed5ed523fba5c7",
+          "groupId": "g1",
           "restaurantCount": 2,
           "restaurantIds": [
             "r1",
@@ -87,7 +87,7 @@
   },
   "getGroupById": {
     "version": 8,
-    "groupId": "g-a5ed5ed523fba5c7",
+    "groupId": "g1",
     "restaurants": [
       {
         "id": "r1",
@@ -128,7 +128,7 @@
       }
     ],
     "expectedDetails": {
-      "groupId": "g-a5ed5ed523fba5c7",
+      "groupId": "g1",
       "restaurantCount": 2,
       "restaurantIds": [
         "r1",
