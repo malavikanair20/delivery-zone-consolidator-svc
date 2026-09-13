@@ -1,0 +1,32 @@
+{
+  "scenarios": [
+    {
+      "scenario": "same point distance is zero",
+      "latitude1": 51.5074,
+      "longitude1": -0.1278,
+      "latitude2": 51.5074,
+      "longitude2": -0.1278,
+      "expectedMeters": 0.0,
+      "toleranceMeters": 0.000001
+    },
+    {
+      "scenario": "short london segment",
+      "latitude1": 51.5074,
+      "longitude1": -0.1278,
+      "latitude2": 51.5100,
+      "longitude2": -0.1300,
+      "expectedMeters": 326.7485649234606,
+      "toleranceMeters": 0.001
+    },
+    {
+      "scenario": "london to birmingham",
+      "latitude1": 51.5074,
+      "longitude1": -0.1278,
+      "latitude2": 52.4862,
+      "longitude2": -1.8904,
+      "expectedMeters": 162495.8406028475,
+      "toleranceMeters": 0.001
+    }
+  ]
+}
+

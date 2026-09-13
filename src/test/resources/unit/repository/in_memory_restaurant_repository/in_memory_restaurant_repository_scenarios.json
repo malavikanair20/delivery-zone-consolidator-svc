@@ -1,0 +1,37 @@
+{
+  "replaceAndFindAll": {
+    "input": [
+      {
+        "id": "r1",
+        "name": "Restaurant A",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      {
+        "id": "r2",
+        "name": "Restaurant B",
+        "latitude": 51.51,
+        "longitude": -0.13,
+        "deliveryRadiusMeters": 2500
+      }
+    ],
+    "expectedStored": [
+      {
+        "id": "r1",
+        "name": "Restaurant A",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      {
+        "id": "r2",
+        "name": "Restaurant B",
+        "latitude": 51.51,
+        "longitude": -0.13,
+        "deliveryRadiusMeters": 2500
+      }
+    ]
+  }
+}
+

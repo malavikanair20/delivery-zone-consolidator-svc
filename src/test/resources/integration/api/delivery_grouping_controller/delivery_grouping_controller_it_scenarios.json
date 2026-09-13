@@ -1,0 +1,118 @@
+{
+  "happyPath": {
+    "restaurants": [
+      {
+        "id": "r1",
+        "name": "Restaurant A",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      {
+        "id": "r2",
+        "name": "Restaurant B",
+        "latitude": 51.51,
+        "longitude": -0.13,
+        "deliveryRadiusMeters": 2500
+      },
+      {
+        "id": "r3",
+        "name": "Restaurant C",
+        "latitude": 51.6,
+        "longitude": -0.3,
+        "deliveryRadiusMeters": 1500
+      }
+    ],
+    "expectedReplaceResponse": {
+      "status": "success",
+      "restaurantsLoaded": 3,
+      "message": "Restaurants successfully stored"
+    },
+    "expectedGroupCount": 2,
+    "expectedNormalizedGroups": [
+      {
+        "restaurantIds": [
+          "r1",
+          "r2"
+        ],
+        "restaurantCount": 2
+      },
+      {
+        "restaurantIds": [
+          "r3"
+        ],
+        "restaurantCount": 1
+      }
+    ]
+  },
+  "invalidPayloadScenarios": [
+    {
+      "scenario": "missing id",
+      "payload": [
+        {
+          "name": "Restaurant A",
+          "latitude": 51.5074,
+          "longitude": -0.1278,
+          "deliveryRadiusMeters": 3000
+        }
+      ]
+    },
+    {
+      "scenario": "invalid latitude",
+      "payload": [
+        {
+          "id": "r1",
+          "name": "Restaurant A",
+          "latitude": 120.0,
+          "longitude": -0.1278,
+          "deliveryRadiusMeters": 3000
+        }
+      ]
+    },
+    {
+      "scenario": "negative radius",
+      "payload": [
+        {
+          "id": "r1",
+          "name": "Restaurant A",
+          "latitude": 51.5074,
+          "longitude": -0.1278,
+          "deliveryRadiusMeters": -1
+        }
+      ]
+    }
+  ],
+  "duplicateIdScenario": {
+    "payload": [
+      {
+        "id": "r1",
+        "name": "Restaurant A",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      {
+        "id": "r1",
+        "name": "Restaurant A Duplicate",
+        "latitude": 51.508,
+        "longitude": -0.128,
+        "deliveryRadiusMeters": 3000
+      }
+    ],
+    "expectedError": "Duplicate restaurant ID :r1"
+  },
+  "missingGroupScenario": {
+    "dataset": [
+      {
+        "id": "r10",
+        "name": "Restaurant X",
+        "latitude": 52.4862,
+        "longitude": -1.8904,
+        "deliveryRadiusMeters": 1500
+      }
+    ],
+    "groupId": "g-does-not-exist",
+    "expectedError": "No group found with id 'g-does-not-exist'"
+  }
+}
+

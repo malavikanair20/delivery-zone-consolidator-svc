@@ -1,0 +1,39 @@
+{
+  "scenarios": [
+    {
+      "scenario": "maps positive coordinates",
+      "input": {
+        "id": "r-london-1",
+        "name": "London Kitchen",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      "expected": {
+        "id": "r-london-1",
+        "name": "London Kitchen",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      }
+    },
+    {
+      "scenario": "maps boundary coordinates and zero radius",
+      "input": {
+        "id": "r-boundary-1",
+        "name": "Boundary Foods",
+        "latitude": -90.0,
+        "longitude": 180.0,
+        "deliveryRadiusMeters": 0
+      },
+      "expected": {
+        "id": "r-boundary-1",
+        "name": "Boundary Foods",
+        "latitude": -90.0,
+        "longitude": 180.0,
+        "deliveryRadiusMeters": 0
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,90 @@
+{
+  "replaceRestaurants": {
+    "requests": [
+      {
+        "id": "r1",
+        "name": "Restaurant A",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      {
+        "id": "r2",
+        "name": "Restaurant B",
+        "latitude": 51.5100,
+        "longitude": -0.1300,
+        "deliveryRadiusMeters": 2500
+      }
+    ],
+    "mappedRestaurants": [
+      {
+        "id": "r1",
+        "name": "Restaurant A",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "deliveryRadiusMeters": 3000
+      },
+      {
+        "id": "r2",
+        "name": "Restaurant B",
+        "latitude": 51.51,
+        "longitude": -0.13,
+        "deliveryRadiusMeters": 2500
+      }
+    ],
+    "expectedResponse": {
+      "status": "success",
+      "restaurantsLoaded": 2,
+      "message": "Restaurants successfully stored"
+    }
+  },
+  "getGroups": {
+    "serviceResponse": {
+      "groupCount": 1,
+      "groups": [
+        {
+          "groupId": "g-r1",
+          "restaurantCount": 2,
+          "restaurantIds": [
+            "r1",
+            "r2"
+          ],
+          "recommendedTargetLatitude": 51.5087,
+          "recommendedTargetLongitude": -0.1289,
+          "recommendedTargetRadiusMeters": 4500
+        }
+      ]
+    }
+  },
+  "getGroupById": {
+    "groupId": "g-r1",
+    "serviceResponse": {
+      "groupId": "g-r1",
+      "restaurantCount": 2,
+      "restaurantIds": [
+        "r1",
+        "r2"
+      ],
+      "recommendedTargetLatitude": 51.5087,
+      "recommendedTargetLongitude": -0.1289,
+      "recommendedTargetRadiusMeters": 4500,
+      "restaurants": [
+        {
+          "id": "r1",
+          "name": "Restaurant A",
+          "latitude": 51.5074,
+          "longitude": -0.1278,
+          "deliveryRadiusMeters": 3000
+        },
+        {
+          "id": "r2",
+          "name": "Restaurant B",
+          "latitude": 51.51,
+          "longitude": -0.13,
+          "deliveryRadiusMeters": 2500
+        }
+      ]
+    }
+  }
+}
+
