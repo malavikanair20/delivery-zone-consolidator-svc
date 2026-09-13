@@ -92,9 +92,9 @@ public class GridGroupingEngine implements GroupingEngine {
         );
     }
 
+// Returns mean latitude of all restros which gives a central approximation for all points
     private double calculateReferenceLatitude(
             List<Restaurant> restaurants) {
-
         return Math.toRadians(
                 restaurants.stream()
                         .mapToDouble(Restaurant::latitude)
@@ -103,6 +103,7 @@ public class GridGroupingEngine implements GroupingEngine {
         );
     }
 
+// Returns max radius of delivery zone of a restro in the list
     private double calculateMaximumRadius(
             List<Restaurant> restaurants) {
 
@@ -112,6 +113,7 @@ public class GridGroupingEngine implements GroupingEngine {
                 .orElse(0.0);
     }
 
+// Returns minimum value or 1 diameter of the max delivery zone or 50km
     private double calculateCellSize(
             double maxRadiusMeters) {
 
@@ -207,6 +209,7 @@ public class GridGroupingEngine implements GroupingEngine {
                 });
     }
 
+//    Returns nearly possible matches for the grid cells
     private List<Integer> findCandidateIndexes(
             Restaurant restaurant,
             int restaurantIndex,
@@ -235,7 +238,7 @@ public class GridGroupingEngine implements GroupingEngine {
                 .flatMap(List::stream)
                 .filter(candidateIndex ->
                         candidateIndex > restaurantIndex
-                )
+                ) // checks (A,b)and avoids checking (B,A)
                 .toList();
     }
 
@@ -276,6 +279,7 @@ public class GridGroupingEngine implements GroupingEngine {
         return cells;
     }
 
+    //Geometric check for distance(A,B0 <= rad A + Rad B
     private boolean overlaps(
             Restaurant left,
             Restaurant right) {
@@ -310,6 +314,7 @@ public class GridGroupingEngine implements GroupingEngine {
                 .toList();
     }
 
+//    Creates a list of restros that are transitively connected
     private Map<Integer, List<Restaurant>> buildComponents(
             List<Restaurant> restaurants,
             DisjointSetUnion dsu) {
@@ -365,6 +370,7 @@ public class GridGroupingEngine implements GroupingEngine {
         );
     }
 
+//    Computes max value of distance from target centre to restaurant centre + each restros delivery radius meters
     private int calculateTargetRadius(
             List<Restaurant> restaurants,
             GeoPoint target) {
@@ -400,7 +406,7 @@ public class GridGroupingEngine implements GroupingEngine {
 
         return vector.toGeoPoint();
     }
-
+// Converts into 3D space on the sphere
     private UnitVector toUnitVector(
             Restaurant restaurant) {
 
@@ -413,7 +419,7 @@ public class GridGroupingEngine implements GroupingEngine {
                 Math.toRadians(
                         restaurant.longitude()
                 );
-
+// scaled by cos(lat) because near the poles horizontal circles gets smaller
         return new UnitVector(
                 Math.cos(latitude)
                         * Math.cos(longitude),
@@ -421,16 +427,17 @@ public class GridGroupingEngine implements GroupingEngine {
                 Math.cos(latitude)
                         * Math.sin(longitude),
 
-                Math.sin(latitude)
+                Math.sin(latitude) //sin is used as near North Pole z will be +1, South Pole will be -1 and 0 at equator
         );
     }
 
-    // GEO PROJECTION
+    // GEO PROJECTION - finding 2D cordinates of restros
 
     private ProjectedPoint project(
             Restaurant restaurant,
             double referenceLatitudeRadians) {
 
+//        Used Math.cos as longitude shrinks as we move from equator to pole
         var metersPerDegreeLongitude =
                 METERS_PER_DEGREE_LATITUDE
                         * Math.cos(
@@ -520,21 +527,21 @@ public class GridGroupingEngine implements GroupingEngine {
         }
 
         private GeoPoint toGeoPoint() {
-
+//vector magnitude length formula in 3D
             var magnitude =
                     Math.sqrt(
                             x * x
                                     + y * y
                                     + z * z
                     );
-
+// tiny threshold to detect almost zero length
             if (magnitude < EPSILON) {
                 throw new IllegalStateException(
                         "Cannot calculate target centre " +
                                 "from a degenerate vector"
                 );
             }
-
+// Normalize vector back to unit length
             var normalizedX = x / magnitude;
             var normalizedY = y / magnitude;
             var normalizedZ = z / magnitude;

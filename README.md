@@ -96,3 +96,5 @@ mvn spring-boot:run
 
 - Service base URL : `http://localhost:8080`
 - Swagger UI : `http://localhost:8080/swagger-ui/index.html`
+
+##### Link to Google Slides - [Delivery Consolidator Service](https://docs.google.com/presentation/d/e/2PACX-1vQPNk9BRm3zxxTrRlIJK4UnX7_Zj4b17TLYTxL3fs_QaLTB3GiEB6he_pbU5Tab6M0BfeflCMlQ84sP/pub?start=false&loop=false&delayms=3000)
