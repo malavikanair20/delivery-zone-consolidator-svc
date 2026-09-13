@@ -11,7 +11,7 @@ A service that groups restaurants into connected delivery zones and returns dete
 
 ```mermaid
 graph TD
-    subgraph API["REST layer (not yet built)"]
+    subgraph API["REST layer"]
         A1[POST /restaurants]
         A2[GET /groups]
         A3[GET /groups/id]
@@ -22,7 +22,7 @@ graph TD
         GS[GroupService]
     end
 
-    RV[RestaurantValidator]
+    RV[Validators]
 
     subgraph Repository
         RR["RestaurantRepository (interface)"]
